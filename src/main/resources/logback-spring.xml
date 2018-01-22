@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="org.springboot.sample" level="INFO"/>
+
+    <!--输出到控制台-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--按天生成日志-->
+    <appender name="logFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Prudent>true</Prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                logs/logback.%d{yyyy-MM-dd}.log
+            </FileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 开发环境，多个使用逗号隔开-->
+    <springProfile name="dev">
+        <logger name="online.localhost01" level="DEBUG" />
+    </springProfile>
+
+    <!-- 生产环境-->
+    <springProfile name="prod">
+        <!--additivity="false" 表示本logger打印即可，而不再向root传递打印信息，避免重复打印-->
+        <logger name="online.localhost01" level="WARN" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="logFile"/>
+        </logger>
+    </springProfile>
+
+</configuration>

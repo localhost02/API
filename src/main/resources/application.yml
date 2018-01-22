@@ -1,0 +1,37 @@
+#主配置
+server:
+  context-path: /api/v1
+  tomcat:
+    max-connections: 1000
+
+mail:
+  host: smtp.qq.com
+  port: 587
+  sender: 你的邮箱
+  password: 邮箱密码/授权码
+  subject: 这是一封测试邮件
+  content: 我是一封测试邮件，我被${mail.sender}扔到了${mail.host}的${mail.port}端口，然后历经千辛万苦来到了你的面前……
+
+sms:
+  url: 短信API网关
+  userName: 账号
+  password: 密码
+  content: 我是一条测试短信，我被某开发者发送到了您的手机……
+
+position:
+  url: http://api.map.baidu.com/location/ip
+  ak: 百度地图ak
+  coor: bd09ll
+
+#引用子配置
+spring:
+  profiles:
+    active: dev
+  #默认SpringBoot出现404时不会报异常，以下两句告诉SpringBoot：出现404，抛出异常
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+
+
+
