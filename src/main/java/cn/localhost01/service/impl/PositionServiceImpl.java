@@ -1,5 +1,6 @@
 package cn.localhost01.service.impl;
 
+import cn.localhost01.constant.APILiteral;
 import cn.localhost01.domain.PositionDO;
 import cn.localhost01.service.PositionService;
 import com.alibaba.fastjson.JSON;
@@ -8,6 +9,7 @@ import cn.localhost01.util.HttpUtil;
 import cn.localhost01.configuration.PositionProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
@@ -21,12 +23,15 @@ import java.util.Objects;
     @Autowired private PositionProperties positionProperties;
 
     @Override public boolean selectAndFill(PositionDO positionDO) throws Exception {
+        if (APILiteral.localhost.equals(positionDO.getIp()) || StringUtils.isEmpty(positionDO.getIp()))
+            return false;
+
         //1.构造请求地址
         StringBuilder sb = new StringBuilder();
-        String url=positionProperties.getUrl();
-        url+="?ak=" + positionDO.getAk();
-        url+="&coor=" + positionProperties.getCoor();
-        url+="&ip=" + positionDO.getIp();
+        String url = positionProperties.getUrl();
+        url += "?ak=" + positionDO.getAk();
+        url += "&coor=" + positionProperties.getCoor();
+        url += "&ip=" + positionDO.getIp();
 
         //2.开始请求
         String result = HttpUtil.getFromURL(url);
@@ -37,8 +42,8 @@ import java.util.Objects;
             JSONObject j_content = j_all.getJSONObject("content");
 
             JSONObject j_point = j_content.getJSONObject("point");
-            String longitude=j_point.getString("x");
-            String latitude=j_point.getString("y");
+            String longitude = j_point.getString("x");
+            String latitude = j_point.getString("y");
 
             JSONObject j_address_detail = j_content.getJSONObject("address_detail");
             String city = j_address_detail.getString("city");
@@ -57,7 +62,7 @@ import java.util.Objects;
             positionDO.setStreet_number(street_number);
 
             return true;
-        }else
+        } else
             return false;
     }
 }
