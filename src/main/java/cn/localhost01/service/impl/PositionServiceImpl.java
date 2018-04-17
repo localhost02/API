@@ -4,15 +4,8 @@ import cn.localhost01.domain.PositionDO;
 import cn.localhost01.service.PositionService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-<<<<<<< HEAD:src/main/java/online/localhost01/service/impl/PositionServiceImpl.java
-import online.localhost01.util.HttpUtil;
-import online.localhost01.configuration.PositionProperties;
-import online.localhost01.domain.PositionDO;
-import online.localhost01.service.PositionService;
-=======
 import cn.localhost01.util.HttpUtil;
 import cn.localhost01.configuration.PositionProperties;
->>>>>>> 91b491290551557eb57f497dcc4ad83436262f9b:src/main/java/cn/localhost01/service/impl/PositionServiceImpl.java
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
