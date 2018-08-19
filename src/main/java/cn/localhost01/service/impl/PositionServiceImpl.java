@@ -14,7 +14,7 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 
 /**
- * @Description:短信发送实现类
+ * @Description:位置查询实现类
  * @Author Ran.chunlin
  * @Date: Created in 14:58 2017/12/17
  */
