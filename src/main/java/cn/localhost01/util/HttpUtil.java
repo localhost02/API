@@ -1,27 +1,94 @@
 package cn.localhost01.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Map;
 
 public abstract class HttpUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
+    /**
+     * 登录网站，获取cookie
+     *
+     * @param url 请求地址
+     * @param params <paramKey,paramValue>
+     *
+     * @return 登录cookie
+     */
+    public static String login(String url, Map<String, String> params) {
+        String responseCookie = null;
+
+        HttpURLConnection connection = null;
+        BufferedReader br = null;
+        OutputStream os = null;
+        try {
+            //1.构造请求
+            URL realUrl = new URL(url);
+            connection = (HttpURLConnection) realUrl.openConnection();
+            connection.setDoInput(true);
+            connection.setDoOutput(true);//允许连接提交信息
+            connection.setRequestMethod("POST");//网页默认“GET”提交方式
+            connection.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:57.0) Gecko/20100101 Firefox/57.0");
+
+            //2.写入请求参数
+            String postPrams = "&&";
+            for (Map.Entry entry : params.entrySet()) {
+                postPrams += ("&" + entry.getKey() + "=" + entry.getValue());
+            }
+            postPrams = postPrams.replace("&&&", "");
+            PrintWriter writer = new PrintWriter(connection.getOutputStream());
+            // 发送请求参数
+            writer.write(postPrams);
+            // flush输出流的缓冲
+            writer.flush();
+
+            //3.根据返回判断是否登录成功
+            if (connection.getResponseCode() == 302) {
+                String location = connection.getHeaderField("Location");
+                return login(location, params);
+            }
+            if (connection.getResponseCode() == 301) {
+                String location = connection.getHeaderField("Location");
+                URL realUrl2 = new URL(location);
+                connection = (HttpURLConnection) realUrl2.openConnection();
+                responseCookie = String.join(";", connection.getHeaderFields().get("Set-Cookie"));
+                return responseCookie;
+            }
+
+            StringBuilder result = new StringBuilder();
+            br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                result.append(line + "\n");
+            }
+        } catch (Exception e) {
+            LogUtil.getLogger(HttpUtil.class).error("发送GET请求出现异常", e);
+        } finally {
+            try {
+                if (os != null)
+                    os.close();
+                if (br != null)
+                    br.close();
+            } catch (IOException e) {
+                LogUtil.getLogger(HttpUtil.class).error("发送GET请求出现异常", e);
+            }
+        }
+
+        //4.获取响应Cookie
+        responseCookie = String.join(";", connection.getHeaderFields().get("Set-Cookie"));
+
+        return responseCookie;
+    }
 
     /**
      * Description: 向指定URL发送GET请求 eq：请求参数为 ?name1=value1&name2=value2 的形式<BR>
      *
-     * @param url
+     * @param url 请求网址
+     * @param cookie 登录cookie
      *
      * @return
      *
@@ -29,34 +96,68 @@ public abstract class HttpUtil {
      * @date 2017年7月19日 下午5:16:06
      * @version 1.0
      */
-    public static String getFromURL(String url) {
+    public static String getResultByURL(String url, String cookie) {
+        //读取URL的响应
         String result = "";
-        BufferedReader in = null;
+        try (InputStream is = getConnectionByURL(url, cookie).getInputStream();
+                BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
+            String line;
+            while ((line = in.readLine()) != null)
+                result += line + "\n";
+        } catch (Exception e) {
+            LogUtil.getLogger(HttpUtil.class).error("解析Get结果出现异常", e);
+        }
+        return result;
+    }
+
+    /**
+     * Description: 向指定URL发送GET请求 eq：请求参数为 ?name1=value1&name2=value2 的形式<BR>
+     *
+     * @param url 请求网址
+     * @param cookie 登录cookie
+     *
+     * @return
+     *
+     * @author ran.chunlin
+     * @date 2017年7月19日 下午5:16:06
+     * @version 1.0
+     */
+    public static HttpURLConnection getConnectionByURL(String url, String cookie) {
+        HttpURLConnection connection = null;
         try {
             //1.构造连接
             URL realUrl = new URL(url);
-            URLConnection connection = realUrl.openConnection();
+            connection = (HttpURLConnection) realUrl.openConnection();
+            //2.设置cookie（常用于登录）
+            connection.setRequestProperty("Cookie", cookie);
+            connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
 
-            //2.请求连接
-            connection.connect();
-
-            // 3.读取URL的响应
-            in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null)
-                result += line;
-
-        } catch (Exception e) {
-            logger.error("发送GET请求出现异常", e);
-        } finally {
-            //4.关闭输入流
-            try {
-                if (in != null)
-                    in.close();
-            } catch (Exception ignore) {
+            //3.根据返回判断是否成功
+            if (connection.getResponseCode() == 302) {
+                String location = connection.getHeaderField("Location");
+                return getConnectionByURL(location, cookie);
             }
+        } catch (Exception e) {
+            LogUtil.getLogger(HttpUtil.class).error("发送GET请求出现异常", e);
         }
-        return result;
+
+        //3.返回连接
+        return connection;
+    }
+
+    /**
+     * Description: 向指定URL发送GET请求 eq：请求参数为 ?name1=value1&name2=value2 的形式<BR>
+     *
+     * @param url 请求网址
+     *
+     * @return
+     *
+     * @author ran.chunlin
+     * @date 2017年7月19日 下午5:16:06
+     * @version 1.0
+     */
+    public static String getResultByURL(String url) {
+        return getResultByURL(url, "");
     }
 
     /**
@@ -71,7 +172,7 @@ public abstract class HttpUtil {
      * @date 2017年7月19日 下午5:16:06
      * @version 1.0
      */
-    public static String postToURL(String url, Map<String, String> params) {
+    public static String postByURL(String url, Map<String, String> params) {
         OutputStreamWriter out = null;
         BufferedReader in = null;
         StringBuilder result = new StringBuilder();
@@ -111,7 +212,7 @@ public abstract class HttpUtil {
             while ((line = in.readLine()) != null)
                 result.append(line);
         } catch (Exception e) {
-            logger.error("发送GET请求出现异常", e);
+            LogUtil.getLogger(HttpUtil.class).error("发送GET请求出现异常", e);
         } finally {
             // 4.关闭输出流、输入流
             try {
@@ -120,7 +221,7 @@ public abstract class HttpUtil {
                 if (in != null)
                     in.close();
             } catch (IOException ex) {
-                logger.error("发送GET请求出现异常", ex);
+                LogUtil.getLogger(HttpUtil.class).error("发送GET请求出现异常", ex);
             }
         }
         return result.toString();
@@ -144,7 +245,7 @@ public abstract class HttpUtil {
             int index = ip.indexOf(",");
             if (index != -1)
                 return ip.substring(0, index);
-             else
+            else
                 return ip;
         }
         ip = request.getHeader("X-Real-IP");
@@ -155,42 +256,19 @@ public abstract class HttpUtil {
     }
 
     /**
-     * Description:检查一个ip是否在ipRange范围内
+     * 判断是否是本地网络
      *
      * @param ip
-     * @param ipRange
      *
      * @return
-     *
-     * @author ran.chunlin
-     * @date 2017年10月26日 上午11:10:28
-     * @version 1.0
      */
-    public static boolean inIpRange(String ip, String ipRange) {
-        // 1.将输入的ip去“.”后组成一个int整型
-        String[] ips = ip.split("\\.");
-        if (ips.length != 4)
-            return false;
-
-        int ipAddr =
-                (Integer.parseInt(ips[0]) << 24) | (Integer.parseInt(ips[1]) << 16) | (Integer.parseInt(ips[2]) << 8)
-                        | Integer.parseInt(ips[3]);
-
-        // 2.得到数字型子网掩码
-        int type = Integer.parseInt(ipRange.replaceAll(".*/", ""));
-        /* 将 /num格式的掩码转为xx.xx.xx.xx的整数值形式 */
-        int mask = type == 0 ? 0 : (0xFFFFFFFF << (32 - type));// 解决：右移32位=右移0位
-
-        // 3.将子网掩码前面的ip组成一个int整型
-        String cidrIp = ipRange.replaceAll("/.*", "");
-        String[] cidrIps = cidrIp.split("\\.");
-        if (cidrIps.length != 4)
-            return false;
-
-        int cidrIpAddr = (Integer.parseInt(cidrIps[0]) << 24) | (Integer.parseInt(cidrIps[1]) << 16) | (
-                Integer.parseInt(cidrIps[2]) << 8) | Integer.parseInt(cidrIps[3]);
-
-        // 4.比较
-        return (ipAddr & mask) == (cidrIpAddr & mask);// ip&掩码是否相等来判断两个ip是否在同一个网段
+    public static boolean isLocalNetwork(String ip) {
+        if ("127.0.0.1".equals(ip))
+            return true;
+        if ("0.0.0.0".equals(ip))
+            return true;
+        if ("localhost".equals(ip))
+            return true;
+        return false;
     }
 }

@@ -3,34 +3,24 @@ package cn.localhost01.configuration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+
 /**
  * @Description:邮件配置类
  * @Author Ran.chunlin
  * @Date: Created in 17:43 2017/12/16
  */
-@Configuration
-@ConfigurationProperties(prefix = "mail")public class MailProperties {
+@Configuration @ConfigurationProperties(prefix = "mail") public class MailProperties extends Authenticator {
     private String host;
     private int port;
     private String sender;
     private String password;
-    private String subject;
-    private String content;
+    private String attachmentSubject;
+    private String attachmentContent;
 
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    @Override protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(sender, password);
     }
 
     public String getHost() {
@@ -63,5 +53,21 @@ import org.springframework.context.annotation.Configuration;
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAttachmentSubject() {
+        return attachmentSubject;
+    }
+
+    public void setAttachmentSubject(String attachmentSubject) {
+        this.attachmentSubject = attachmentSubject;
+    }
+
+    public String getAttachmentContent() {
+        return attachmentContent;
+    }
+
+    public void setAttachmentContent(String attachmentContent) {
+        this.attachmentContent = attachmentContent;
     }
 }

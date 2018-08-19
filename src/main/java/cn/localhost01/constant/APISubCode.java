@@ -8,4 +8,6 @@ package cn.localhost01.constant;
 public interface APISubCode {
     int SUCCESS = 1000;
     int FAILED = 2000;
+    int OVER_LIMIT = 3000;
+    int NOT_HOME_USER = 4000;
 }

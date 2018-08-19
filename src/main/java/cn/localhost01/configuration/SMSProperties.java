@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date: Created in 17:43 2017/12/16
  */
 @Configuration
-@ConfigurationProperties(prefix = "sms")public class SMSProperties {
+@ConfigurationProperties(prefix = "sms")public class SmsProperties {
     private String url;
     private String userName;
     private String password;

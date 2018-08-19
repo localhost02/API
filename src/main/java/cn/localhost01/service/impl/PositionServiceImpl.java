@@ -1,12 +1,12 @@
 package cn.localhost01.service.impl;
 
-import cn.localhost01.constant.APILiteral;
+import cn.localhost01.configuration.PositionProperties;
 import cn.localhost01.domain.PositionDO;
 import cn.localhost01.service.PositionService;
+import cn.localhost01.constant.APIConstant;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import cn.localhost01.util.HttpUtil;
-import cn.localhost01.configuration.PositionProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -23,7 +23,7 @@ import java.util.Objects;
     @Autowired private PositionProperties positionProperties;
 
     @Override public boolean selectAndFill(PositionDO positionDO) throws Exception {
-        if (APILiteral.localhost.equals(positionDO.getIp()) || StringUtils.isEmpty(positionDO.getIp()))
+        if (APIConstant.LOCALHOST.equals(positionDO.getIp()) || StringUtils.isEmpty(positionDO.getIp()))
             return false;
 
         //1.构造请求地址
@@ -34,7 +34,7 @@ import java.util.Objects;
         url += "&ip=" + positionDO.getIp();
 
         //2.开始请求
-        String result = HttpUtil.getFromURL(url);
+        String result = HttpUtil.getResultByURL(url);
 
         //3.解析结果
         JSONObject j_all = JSON.parseObject(result);

@@ -1,14 +1,14 @@
 package cn.localhost01.controller;
 
+import cn.localhost01.annotation.RequestFormBody;
+import cn.localhost01.configuration.SmsProperties;
 import cn.localhost01.constant.APICode;
 import cn.localhost01.constant.APIMsg;
 import cn.localhost01.constant.APISubCode;
-import cn.localhost01.constant.APISubMsg;
 import cn.localhost01.domain.JsonVO;
-import cn.localhost01.domain.SMSDO;
-import cn.localhost01.service.SMSService;
-import cn.localhost01.annotation.RequestFormBody;
-import cn.localhost01.configuration.SMSProperties;
+import cn.localhost01.domain.SmsDO;
+import cn.localhost01.service.SmsService;
+import cn.localhost01.constant.APISubMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,17 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
  * @Author Ran.chunlin
  * @Date: Created in 19:29 2017/12/16
  */
-@RestController public class SMSController {
+@RestController public class SmsController {
 
-    @Autowired private SMSProperties smsProperties;
-    @Autowired private SMSService smsService;
+    @Autowired private SmsProperties smsProperties;
+    @Autowired private SmsService smsService;
 
-    @PostMapping(value = "/sms") public JsonVO sendMail(@RequestFormBody SMSDO smsdoDO) throws Exception {
+    @PostMapping(value = "/sms") public JsonVO sendMail(@RequestFormBody SmsDO smsdoDO) throws Exception {
         JsonVO jsonVO = new JsonVO();
 
         //1.进行校验
         if (smsdoDO == null || smsdoDO.getPhone()==null)
-            return jsonVO.withCodeAndMsg(APICode.BAD_REQUEST, APIMsg.BAD_REQUEST);
+            return jsonVO.withBase(APICode.BAD_REQUEST, APIMsg.BAD_REQUEST);
 
         if (smsdoDO.getContent()==null)
             smsdoDO.setContent(smsProperties.getContent());
@@ -42,8 +42,8 @@ import org.springframework.web.bind.annotation.RestController;
         //2.业务处理
         boolean isSendOk = smsService.send(smsdoDO);
         if (isSendOk)
-            return jsonVO.withSubCodeAndSubMsg(APISubCode.SUCCESS, APISubMsg.SUCCESS);
+            return jsonVO.withSub(APISubCode.SUCCESS, APISubMsg.SUCCESS);
         else
-            return jsonVO.withSubCodeAndSubMsg(APISubCode.FAILED, APISubMsg.FAILED);
+            return jsonVO.withSub(APISubCode.FAILED, APISubMsg.FAILED);
     }
 }

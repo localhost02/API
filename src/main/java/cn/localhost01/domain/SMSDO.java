@@ -5,7 +5,7 @@ package cn.localhost01.domain;
  * @Author Ran.chunlin
  * @Date: Created in 14:57 2017/12/17
  */
-public class SMSDO {
+public class SmsDO {
 
     private String url;
     private String userName;

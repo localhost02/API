@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
         //1.进行校验
         if (positionDO == null)
-            return jsonVO.withCodeAndMsg(APICode.BAD_REQUEST, APIMsg.BAD_REQUEST);
+            return jsonVO.withBase(APICode.BAD_REQUEST, APIMsg.BAD_REQUEST);
 
         if (positionDO.getAk() == null)
             positionDO.setAk(positionProperties.getAk());
@@ -42,8 +42,8 @@ import javax.servlet.http.HttpServletRequest;
         boolean isSuccess = positionService.selectAndFill(positionDO);
         if (isSuccess) {
             jsonVO.put("positionDO", positionDO);
-            return jsonVO.withCodeAndMsg(APICode.OK, APIMsg.OK);
+            return jsonVO.withBase(APICode.OK, APIMsg.OK);
         } else
-            return jsonVO.withCodeAndMsg(APICode.NOT_FOUND, APIMsg.NOT_FOUND);
+            return jsonVO.withBase(APICode.NOT_FOUND, APIMsg.NOT_FOUND);
     }
 }

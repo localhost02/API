@@ -1,58 +1,18 @@
 package cn.localhost01.domain;
 
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
+import javax.mail.BodyPart;
 
 /**
  * @Description:邮件实体类
  * @Author Ran.chunlin
  * @Date: Created in 1:59 2017/12/16
  */
-public class MailDO extends Authenticator {
+public class MailDO {
 
-    private String host;// 邮件服务器
-    private int port;// 端口
-    private String sender;// 发送者
-    private String password;// 登录密码
     private String receiver;// 接受者
     private String subject;// 主题
     private String content;// 内容
-
-    @Override protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(sender, password);
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    private BodyPart attachmentPart;// 附件
 
     public String getReceiver() {
         return receiver;
@@ -76,5 +36,13 @@ public class MailDO extends Authenticator {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public BodyPart getAttachmentPart() {
+        return attachmentPart;
+    }
+
+    public void setAttachmentPart(BodyPart attachmentPart) {
+        this.attachmentPart = attachmentPart;
     }
 }

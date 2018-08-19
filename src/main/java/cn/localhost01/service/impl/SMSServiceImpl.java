@@ -1,8 +1,9 @@
 package cn.localhost01.service.impl;
 
-import cn.localhost01.service.SMSService;
 import cn.localhost01.constant.APICode;
-import cn.localhost01.domain.SMSDO;
+import cn.localhost01.domain.SmsDO;
+import cn.localhost01.service.SmsService;
+import cn.localhost01.util.LogUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -10,8 +11,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,11 +26,9 @@ import java.util.List;
  * @Author Ran.chunlin
  * @Date: Created in 14:58 2017/12/17
  */
-@Service public class SMSServiceImpl implements SMSService {
+@Service public class SmsServiceImpl implements SmsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SMSServiceImpl.class);
-
-    @Override public boolean send(SMSDO smsDO) throws Exception {
+    @Override public boolean send(SmsDO smsDO) throws Exception {
 
         //1. 初始化需要使用的对象
         HttpPost post = new HttpPost(smsDO.getUrl());
@@ -51,7 +48,7 @@ import java.util.List;
         try {
             response = HttpClients.createDefault().execute(post);
         } catch (IOException e) {
-            logger.warn(smsDO.getPhone() + "的短信发送失败", e);
+            LogUtil.getLogger(SmsServiceImpl.class).warn(smsDO.getPhone() + "的短信发送失败", e);
             return false;
         }
 
@@ -90,7 +87,7 @@ import java.util.List;
 
             return result.toString();
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            logger.error("32位小写MD5加密异常", e);
+            LogUtil.getLogger(SmsServiceImpl.class).error("32位小写MD5加密异常", e);
             return "";
         }
     }

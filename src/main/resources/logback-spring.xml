@@ -27,13 +27,16 @@
 
     <!-- 开发环境，多个使用逗号隔开-->
     <springProfile name="dev">
-        <logger name="online.localhost01" level="DEBUG" />
+        <logger name="cn.localhost01" level="DEBUG">
+            <appender-ref ref="console"/>
+            <appender-ref ref="logFile"/>
+        </logger>
     </springProfile>
 
     <!-- 生产环境-->
     <springProfile name="prod">
         <!--additivity="false" 表示本logger打印即可，而不再向root传递打印信息，避免重复打印-->
-        <logger name="online.localhost01" level="WARN" additivity="false">
+        <logger name="cn.localhost01" level="INFO" additivity="false">
             <appender-ref ref="console"/>
             <appender-ref ref="logFile"/>
         </logger>
