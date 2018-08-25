@@ -27,7 +27,7 @@
 
     <!-- 开发环境，多个使用逗号隔开-->
     <springProfile name="dev">
-        <logger name="cn.localhost01" level="DEBUG">
+        <logger name="cn.localhost01" level="DEBUG" additivity="false">
             <appender-ref ref="console"/>
             <appender-ref ref="logFile"/>
         </logger>

@@ -61,11 +61,13 @@ import java.util.regex.Pattern;
             params.put("lt", lt);
             params.put("execution", execution);
             params.put("_eventId", _eventId);
+
             //CSDN貌似判断机器人，睡眠一下，增加成功率
-            Thread.sleep(1000);
+            Thread.sleep(5000);
+
             String loginCookie = HttpUtil.login(location, params);
 
-            if (!loginCookie.matches(".*UserToken=\"\".*"))
+            if (!loginCookie.contains("UserToken=\"\""))
                 csdnMap.put(LOGIN_COOKIE, loginCookie);
             count++;
         }
@@ -85,6 +87,10 @@ import java.util.regex.Pattern;
 
         //解析文件名
         String Disposition = connection.getHeaderField("Content-Disposition");
+        if (Disposition == null) {
+            LogUtil.getLogger(CsdnServiceImpl.class).warn("CSDN下载失败，请注意！");
+            return false;
+        }
         Matcher matcher = Pattern.compile(".*?;filename=\"(.*)\"").matcher(Disposition);
         String filename;
         if (matcher.find()) {

@@ -9,7 +9,7 @@ import cn.localhost01.domain.JsonVO;
 import cn.localhost01.domain.MailDO;
 import cn.localhost01.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
     @Autowired private MailService mailService;
 
-    @PostMapping(value = "/mail") public JsonVO sendMail(@RequestFormBody MailDO mailDO) throws Exception {
+    @RequestMapping(value = "/mail") public JsonVO sendMail(@RequestFormBody MailDO mailDO) throws Exception {
         JsonVO jsonVO = new JsonVO();
 
         //1.进行校验

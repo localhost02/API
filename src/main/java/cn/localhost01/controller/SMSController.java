@@ -5,12 +5,12 @@ import cn.localhost01.configuration.SmsProperties;
 import cn.localhost01.constant.APICode;
 import cn.localhost01.constant.APIMsg;
 import cn.localhost01.constant.APISubCode;
+import cn.localhost01.constant.APISubMsg;
 import cn.localhost01.domain.JsonVO;
 import cn.localhost01.domain.SmsDO;
 import cn.localhost01.service.SmsService;
-import cn.localhost01.constant.APISubMsg;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
     @Autowired private SmsProperties smsProperties;
     @Autowired private SmsService smsService;
 
-    @PostMapping(value = "/sms") public JsonVO sendMail(@RequestFormBody SmsDO smsdoDO) throws Exception {
+    @RequestMapping(value = "/sms") public JsonVO sendMail(@RequestFormBody SmsDO smsdoDO) throws Exception {
         JsonVO jsonVO = new JsonVO();
 
         //1.进行校验

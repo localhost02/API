@@ -46,7 +46,7 @@ public abstract class HttpUtil {
             // flush输出流的缓冲
             writer.flush();
 
-            //3.根据返回判断是否登录成功
+            //3.根据返回判断是否登录成功，有时返回302，需要重新登录
             if (connection.getResponseCode() == 302) {
                 String location = connection.getHeaderField("Location");
                 return login(location, params);

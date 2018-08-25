@@ -1,15 +1,15 @@
 package cn.localhost01.controller;
 
-import cn.localhost01.service.PositionService;
-import cn.localhost01.util.HttpUtil;
 import cn.localhost01.annotation.RequestFormBody;
 import cn.localhost01.configuration.PositionProperties;
 import cn.localhost01.constant.APICode;
 import cn.localhost01.constant.APIMsg;
 import cn.localhost01.domain.JsonVO;
 import cn.localhost01.domain.PositionDO;
+import cn.localhost01.service.PositionService;
+import cn.localhost01.util.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
     @Autowired private PositionProperties positionProperties;
     @Autowired private PositionService positionService;
 
-    @GetMapping(value = "/position") public JsonVO getPosition(HttpServletRequest request,
+    @RequestMapping(value = "/position") public JsonVO getPosition(HttpServletRequest request,
             @RequestFormBody PositionDO positionDO) throws Exception {
         JsonVO jsonVO = new JsonVO();
 
